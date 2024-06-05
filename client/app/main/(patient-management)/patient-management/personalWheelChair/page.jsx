@@ -13,9 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 // UI components from shacdcn
-import { toast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { toast } from "@/app/components/ui/use-toast";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import {
   Form,
   FormControl,
@@ -23,9 +23,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@/app/components/ui/form";
+import { ScrollArea, ScrollBar } from "@/app/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,10 +36,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/app/components/ui/alert-dialog";
 // Self-built modules
-import WheelChairChartComponent from "@/components/dashboard/dash-board-panels/WheelChairChart";
-import RoomChartComponent from "@/components/dashboard/dash-board-panels/RoomChart";
+import WheelChairChartComponent from "@/app/components/dashboard/dash-board-panels/WheelChairChart";
+import RoomChartComponent from "@/app/components/dashboard/dash-board-panels/RoomChart";
 import { fetchPatientInfo } from "@/src/services/GetData/FetchPatientsInfo";
 import { DummyDataPatientInfo } from "@/data/patientData/PatientInfo";
 import { boolean } from "zod";
@@ -192,7 +192,7 @@ function personalChairAssignment() {
                             control={formOne.control}
                             render={({ field }) => (
                               // formItem is using react context under the hood, anytime error message comes up the FormMessage component will display it under the hood
-                              <FormItem className="s flex h-full max-w-[50%] grow items-center  rounded-lg  ">
+                              <FormItem className=" flex h-full max-w-[50%] grow items-center  rounded-lg  ">
                                 <FormControl>
                                   <Input
                                     {...field}

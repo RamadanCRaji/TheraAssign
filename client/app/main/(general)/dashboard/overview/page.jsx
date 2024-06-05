@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import UpdatePanel from "@/components/dashboard/dash-board-panels/UpdatePanel";
-import AdminTaskPanel from "@/components/dashboard/dash-board-panels/AdminTaskPanel";
-import RoomChartComponent from "@/components/dashboard/dash-board-panels/RoomChart";
-import WheelChairChartComponent from "@/components/dashboard/dash-board-panels/WheelChairChart";
-import FloorPanelCopy from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
+import UpdatePanel from "@/app/components/dashboard/dash-board-panels/UpdatePanel";
+import AdminTaskPanel from "@/app/components/dashboard/dash-board-panels/AdminTaskPanel";
+import RoomChartComponent from "@/app/components/dashboard/dash-board-panels/RoomChart";
+import WheelChairChartComponent from "@/app/components/dashboard/dash-board-panels/WheelChairChart";
+import FloorPanelCopy from "@/app/components/dashboard/dash-board-panels/FloorPanelCopy";
 
 import {
   fetchAvailableWheelChairs,

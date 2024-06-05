@@ -1,5 +1,5 @@
-import SideMenu from "@/components/ui/SideMenu";
-import { Toaster } from "@/components/ui/Toaster";
+import SideMenu from "@/app/components/ui/SideMenu";
+import { Toaster } from "@/app/components/ui/Toaster";
 
 export default function DashboardLayout({ children }) {
   return (

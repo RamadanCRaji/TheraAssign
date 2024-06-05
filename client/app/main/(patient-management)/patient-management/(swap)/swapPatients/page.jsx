@@ -7,9 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 // UI components from shacdcn
-import { toast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { toast } from "@/app/components/ui/use-toast";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import {
   Form,
   FormControl,
@@ -17,8 +17,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+} from "@/app/components/ui/form";
+import { ScrollArea, ScrollBar } from "@/app/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -27,7 +27,7 @@ import {
   SelectGroup,
   SelectValue,
   SelectLabel,
-} from "@/components/ui/select";
+} from "@/app/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,13 +38,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/app/components/ui/alert-dialog";
 
 // Self-built modules
 import { fetchPatientInfo } from "@/src/services/GetData/FetchPatientsInfo";
 import { DummyDataPatientInfo } from "@/data/patientData/PatientInfo";
 import { boolean } from "zod";
-import FloorPanel from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
+import FloorPanel from "@/app/components/dashboard/dash-board-panels/FloorPanelCopy";
 import { eastSide } from "@/data/roomData/firstFloor";
 import { swapPatientData } from "@/lib/utils/patientUtils.js";
 

@@ -7,9 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 // UI components from shacdcn
-import { toast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { toast } from "@/app/components/ui/use-toast";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,7 @@ import {
   SelectGroup,
   SelectValue,
   SelectLabel,
-} from "@/components/ui/select";
+} from "@/app/components/ui/select";
 import {
   Form,
   FormControl,
@@ -26,11 +26,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+} from "@/app/components/ui/form";
+import { ScrollArea, ScrollBar } from "@/app/components/ui/scroll-area";
 
 // Self-built modules
-import { ChairLayout } from "@/components/ChairLayout";
+import { ChairLayout } from "@/app/components/ChairLayout";
 import { fetchAllChairs } from "@/src/services/GetData/FetchHospitalChairs";
 import { chairs } from "@/data/chairData/ChairInventory";
 import { eastSide } from "@/data/roomData/firstFloor";

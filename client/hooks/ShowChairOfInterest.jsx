@@ -10,7 +10,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { fetchAvailableChairs } from "@/src/services/FetchHospitalChairs";
 
 const STANDARD = "STANDARD";
@@ -190,7 +190,7 @@ states that i am managing
 ("use client");
 import { useState, useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { fetchAvailableChairs } from "@/src/services/FetchHospitalChairs";
 
 function Admit() {

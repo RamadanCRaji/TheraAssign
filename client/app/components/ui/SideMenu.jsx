@@ -2,8 +2,8 @@
 import React from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useState } from "react";
-import IconSidebar from "/components/menu/IconSidebar";
-import ExpandableMenu from "/components/menu/ExpandableMenu";
+import IconSidebar from "@/app/components/menu/IconSidebar";
+import ExpandableMenu from "@/app/components/menu/ExpandableMenu";
 import { Homemade_Apple } from "next/font/google";
 
 function SideMenu() {

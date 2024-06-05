@@ -1,5 +1,3 @@
-*/
-
 "use client";
 import { AiFillHome } from "react-icons/ai";
 import { FaHospitalUser } from "react-icons/fa6";

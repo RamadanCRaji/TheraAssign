@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 //components from shacdcn
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
+import { Progress } from "@/app/components/ui/progress";
+import { Button } from "@/app/components/ui/button";
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/app/components/ui/scroll-area";
 
 const STANDARD = "STANDARD";
 const BARIATRIC = "BARIATRIC";
