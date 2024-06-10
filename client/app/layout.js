@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const ibm = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -17,7 +18,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={ibm.className}>
-        <main>{children}</main>
+        <main>
+          {children}
+          <Toaster />
+        </main>
       </body>
     </html>
   );
