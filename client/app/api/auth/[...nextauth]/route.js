@@ -67,7 +67,6 @@ export const authOptions = {
 };
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-console.log(handler);
 
 // Notes:
 // - The CredentialsProvider is used for users who prefer to log in using email and password instead of OAuth options like Google or GitHub.
