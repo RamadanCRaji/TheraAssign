@@ -97,32 +97,55 @@ export function UserAuthForm({ className, ...props }) {
         //NextAuth Login
         const login = await signIn("credentials", { ...data, redirect: false });
         console.log({ login });
-        // signIn("credentials", { ...data, redirect: false })
-        // .then((callback) => {
-        //   if (callback?.error) {
-        //     toast.error("invalid credentials");
-        //   }
-        //   if (callback?.ok) {
-        //     toast.success("success");
-        //   }
-        // });
-        // const response = await signIn("credentials", {
-        //   ...data,
-        //   redirect: false,
-        // });
+        if (login?.ok && !login?.error) {
+          toast({
+            variant: "success",
+            title: "Success",
+            description: `login successfull`,
+          });
+        }
+        if (login?.error) {
+          throw new Error(login.error);
+        }
       }
-      const socialAction = (action) => {};
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${error.response}`,
+        description: `${error.message}`,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
     } finally {
       setIsLoading(false);
     }
   }
+  const socialAction = async (action) => {
+    try {
+      setIsLoading(true);
+      const login = await signIn(action, { redirect: false });
+      console.log({ login });
+      if (login?.ok && !login?.error) {
+        toast({
+          variant: "success",
+          title: "Success",
+          description: `login successfull`,
+        });
+      }
+      if (login?.error) {
+        throw new Error(login.error);
+      }
+    } catch (error) {
+      console.log({ error, login });
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: `${error.message}`,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className={cn("grid gap-4 ", className)} {...props}>

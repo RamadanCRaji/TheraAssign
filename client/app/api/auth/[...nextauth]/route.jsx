@@ -41,7 +41,6 @@ export const authOptions = {
             email: credentials.email,
           },
         });
-
         // Check if user exists and has a hashed password set
         if (!user || !user?.hashedPassword) {
           throw new Error("Invalid credentials"); // Error if no user or no hashed password
@@ -67,7 +66,8 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 const handler = NextAuth(authOptions);
-export { handler as Get, handler as POST };
+export { handler as GET, handler as POST };
+console.log(handler);
 
 // Notes:
 // - The CredentialsProvider is used for users who prefer to log in using email and password instead of OAuth options like Google or GitHub.
