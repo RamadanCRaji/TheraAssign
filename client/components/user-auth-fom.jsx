@@ -123,7 +123,7 @@ export function UserAuthForm({ className, ...props }) {
     try {
       setIsLoading(true);
       const login = await signIn(action, { redirect: false });
-      console.log({ login });
+      console.log(`this is the login message we got ${{ login }}`);
       if (login?.ok && !login?.error) {
         toast({
           variant: "success",
@@ -135,7 +135,7 @@ export function UserAuthForm({ className, ...props }) {
         throw new Error(login.error);
       }
     } catch (error) {
-      console.log({ error, login });
+      console.error(`this is the erro we got ${{ error }}`);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",

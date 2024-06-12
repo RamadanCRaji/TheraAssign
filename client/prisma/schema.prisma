@@ -14,12 +14,14 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
   name           String?
-  email          String?  @unique
+  email          String?   @unique
+  image          String?
   hashedPassword String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  emailVerified  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   account        Account? // each user can be linked to an Account by way of back refernce. 
 }
 
@@ -29,10 +31,11 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?  @db.String
+  refresh_token     String? @db.String
   access_token      String? @db.String
   expires_at        Int?
   token_type        String?
+  scope             String?
   id_token          String? @db.String
   session_state     String?
 
