@@ -139,37 +139,6 @@ export function IconSidebar(props) {
         </div>
       </nav>
     </aside>
-    // <aside className=" relative z-10 flex w-16 flex-col justify-between bg-[#2f4550] px-1 py-1 duration-500">
-    //   <div className="mb-20 flex items-center justify-center pr-1">
-    //     <FaBullseye className="h-10 w-10 cursor-pointer rounded p-1 text-4xl text-[#8a949a] hover:bg-[#3a515c] hover:text-[#b0b8bf]" />
-    //   </div>
-    //   <div className="grid h-full grid-cols-1 grid-rows-[80px,80px,80px] gap-12 pt-3">
-    //     {menuItem.map((iconItem, index) => {
-    //       return (
-    //         <div
-    //           key={iconItem.id}
-    //           className=" flex items-center justify-center rounded-md transition duration-300 ease-in hover:scale-105 hover:bg-[#3a515c]"
-    //         >
-    //           <i>
-    //             <iconItem.icon
-    //               className=" cursor-pointer text-3xl text-[#8a949a] hover:text-[#b0b8bf]"
-    //               onClick={() => {
-    //                 handleIconClick(
-    //                   iconItem.id,
-    //                   onIconClick,
-    //                   updateSelectedIcon,
-    //                 );
-    //               }}
-    //             />
-    //           </i>
-    //         </div>
-    //       );
-    //     })}
-    //   </div>
-    //   <div className="mt-20 flex items-center justify-center rounded-md hover:bg-[#3a515c]">
-    //     <BiLogOut className="cursor-pointer p-1 text-center text-5xl font-bold text-[#8a949a] hover:text-[#b0b8bf]" />
-    //   </div>
-    // </aside>
   );
 }
 

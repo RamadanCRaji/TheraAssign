@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import AuthContext from "@/app/context/AuthContext";
 
 const ibm = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -19,8 +20,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={ibm.className}>
         <main>
-          {children}
-          <Toaster />
+          <AuthContext>
+            {children}
+            <Toaster />
+          </AuthContext>
         </main>
       </body>
     </html>
