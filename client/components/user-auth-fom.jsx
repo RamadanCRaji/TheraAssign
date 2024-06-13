@@ -27,7 +27,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import AuthSocialButton from "./AuthSocialButton";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const formOneRegisterSchema = z.object({
   name: z.string().min(3, "required"),
@@ -51,6 +52,13 @@ const formTwoLoginDefaultValue = {
 };
 
 export function UserAuthForm({ className, ...props }) {
+  const { data: session, status } = useSession({
+    redirect: true,
+    onUnauthenticated() {
+      router.push("/");
+    },
+  });
+  const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
   const [variant, setVariant] = React.useState("LOGIN");
@@ -63,7 +71,12 @@ export function UserAuthForm({ className, ...props }) {
     resolver: zodResolver(formTwoLoginSchema),
     defaultValues: formTwoLoginDefaultValue,
   });
-
+  React.useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/main/dashboard/overview");
+      console.log(`signed in as ${session.user.name}}`);
+    }
+  }, [status]);
   const toggleVariant = React.useCallback(() => {
     if (variant === "LOGIN") {
       setVariant("REGISTER");
@@ -92,6 +105,7 @@ export function UserAuthForm({ className, ...props }) {
         if (!response.ok) {
           throw new Error(`Network response was not ok:${response}`);
         }
+        await signIn("credentials", data);
       }
       if (variant === "LOGIN") {
         //NextAuth Login
@@ -103,6 +117,7 @@ export function UserAuthForm({ className, ...props }) {
             title: "Success",
             description: `login successfull`,
           });
+          router.push("/main/dashboard/overview");
         }
         if (login?.error) {
           throw new Error(login.error);

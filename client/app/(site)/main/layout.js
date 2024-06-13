@@ -1,11 +1,14 @@
 import SideMenu from "@/components/ui/SideMenu";
+import AuthContext from "@/app/context/AuthContext";
 
-export default function DashboardLayout({ children }) {
+export default function MainPageLayout({ children }) {
   return (
     <>
       <section className=" flex h-screen w-screen items-stretch  justify-start">
-        <SideMenu />
-        {children}
+        <AuthContext>
+          <SideMenu />
+          {children}
+        </AuthContext>
       </section>
     </>
   );

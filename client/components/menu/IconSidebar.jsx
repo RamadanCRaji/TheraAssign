@@ -5,9 +5,12 @@ import { BiSolidDashboard } from "react-icons/bi";
 import { BiLogOut } from "react-icons/bi";
 import { FaBullseye } from "react-icons/fa6";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function IconSidebar(props) {
   const { onIconClick, updateSelectedIcon, isOpen } = props;
+  const router = useRouter();
   let [lastClicked, setLastClicked] = useState(null);
   const menuItem = [
     { icon: AiFillHome, id: "home" },
@@ -30,7 +33,9 @@ export default function IconSidebar(props) {
       setLastClicked(null);
     }
   };
-
+  const signOutbutton = async () => {
+    await signOut({ redirect: true, callbackUrl: "/" });
+  };
   return (
     <aside className=" relative z-10 flex w-16 flex-col justify-between bg-[#2f4550] px-1 py-1 duration-500">
       <div className="mb-20 flex items-center justify-center pr-1">
@@ -59,7 +64,10 @@ export default function IconSidebar(props) {
           );
         })}
       </div>
-      <div className="mt-20 flex items-center justify-center rounded-md hover:bg-[#3a515c]">
+      <div
+        className="mt-auto flex items-center justify-center rounded-md hover:bg-[#3a515c]"
+        onClick={signOutbutton}
+      >
         <BiLogOut className="cursor-pointer p-1 text-center text-5xl font-bold text-[#8a949a] hover:text-[#b0b8bf]" />
       </div>
     </aside>
