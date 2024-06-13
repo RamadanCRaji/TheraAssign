@@ -46,7 +46,7 @@ import { DummyDataPatientInfo } from "@/data/patientData/PatientInfo";
 import { boolean } from "zod";
 import FloorPanel from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
 import { eastSide } from "@/data/roomData/firstFloor";
-import { swapPatientData } from "@/lib/utils/patientUtils.js";
+import { swapPatientData } from "@/lib/patientUtils.js";
 
 // Patient Search schema for validation
 const FormOneSchema = z.object({

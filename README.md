@@ -155,10 +155,10 @@ const roomSchema = new Schema({
 ## Sprints
 
 **Sprint 1:** Set up front-end and back-end project dependencies  
-**Sprint 2:** Create homepage, landing page, login page, and signup page  
-**Sprints 3-5:** Develop overview page, personal wheelchair page, swap patient page, room switch page, return wheelchair page, and floor plan page  
+**Sprint 2:** Create homepage, landing page, login page, and signup page √  
+**Sprints 3-5:** Develop overview page, personal wheelchair page, swap patient page, room switch page, return wheelchair page, and floor plan page √  
 **Sprint 6:** Ensure all pages are functional and integrated √  
-**Sprint 7:** Implement search functionality for patients and wheelchairs  
+**Sprint 7:** Implement search functionality for patients and wheelchairs √  
 **Sprint 8:** Add detailed views for individual patients and wheelchairs  
 **Sprint 9:** Integrate user notifications and favorites functionality  
 **Sprint 10:** Enable delete functionality for listings and user account deletion
