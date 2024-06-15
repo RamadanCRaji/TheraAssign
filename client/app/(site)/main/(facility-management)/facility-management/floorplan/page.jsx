@@ -29,6 +29,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import {
   Form,
@@ -93,24 +102,43 @@ function OverallFloorPlan(props) {
   //   fetchAndUpdateRoomInfo();
   // }, []);
 
+  const patientInfo = (roomNumber, pwc, fullName, chair) => (
+    <div className="grid gap-4 rounded-lg bg-white p-4 shadow-md">
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700"> Patient Name:</span>
+        <span className="text-gray-600">{fullName}</span>
+      </div>
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700">Room:</span>
+        <span className="text-gray-600">{roomNumber}</span>
+      </div>
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700">Chair:</span>
+        <span className="text-gray-600">{chair}</span>
+      </div>
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700">Personal W.C:</span>
+        <span className="text-gray-600">{pwc ? "Yes" : "No"}</span>
+      </div>
+    </div>
+  );
+
   // Helper function to determine room color based on occupancy
   const roomColor = (occupied) => (occupied ? "bg-blue-200" : "bg-yellow-400 ");
 
   // Helper function to render individual rooms
   const renderRoom = (room) => {
     let roomClasses =
-      " rounded-xl flex items-center justify-center p-2 text-black";
+      "rounded-xl flex items-center justify-center p-2 text-black hover:cursor-pointer hover:scale-110 lg:hover:scale-105 duration-300 ease-in hover:font-bold ";
     let specialRoomClasses = "col-start-2 col-end-4 grid grid-cols-4 ";
+
     if (room.id === "113" || room.id === "126") {
       return (
-        <div key={room.id} className={`${specialRoomClasses}`}>
+        <div className={`${specialRoomClasses}`} key={room.id}>
           <div
             className={`${roomClasses} ${roomColor(
               room.occupied,
             )} col-span-2 col-start-2`}
-            onClick={() => {
-              alert("hello");
-            }}
           >
             <span className="">{room["Room Number"]}</span>
           </div>
@@ -121,14 +149,6 @@ function OverallFloorPlan(props) {
         <div
           key={room.id}
           className={`${roomClasses} ${roomColor(room.occupied)}`}
-          onClick={() => {
-            // i want to set the name,Room,Chair, Chair,P.W.C
-
-            formOne.setValue("name", room?.fullName);
-            formOne.setValue("room", room?.["Room Number"]);
-            formOne.setValue("currentChair", room?.chair);
-            formOne.setValue("P.W.C", room?.["P.W.C"]);
-          }}
         >
           <span>{room["Room Number"]}</span>
         </div>

@@ -18,7 +18,7 @@ function UpdatePanel() {
     {
       key: "Room Switch-4",
       action: "Room Switch",
-      href: `/main/patient-management/swapRooms`,
+      href: `/main/patient-management/room-change`,
     },
     {
       key: "Return W.C-5",

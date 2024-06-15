@@ -52,8 +52,7 @@ const horizontalLayout = `flex gap-10 justify-center`;
 const verticalLayout = `flex gap-10 justify-around flex-col`;
 
 // Main component definition
-function FloorPanel(props) {
-  const { layoutPlan } = props;
+function FloorPanel({ layoutPlan }) {
   const [show2ndFloorPlan, setshow2ndFloorPlan] = useState(false);
   const [show1stFloorPlan, setshow1stFloorPlan] = useState(true);
 
@@ -101,14 +100,51 @@ function FloorPanel(props) {
     }
   };
 
+  const patientInfo = (roomNumber, pwc, fullName, chair) => (
+    <div className="grid gap-4 rounded-lg bg-white p-4 shadow-md">
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700"> Patient Name:</span>
+        <span className="text-gray-600">{fullName}</span>
+      </div>
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700">Room:</span>
+        <span className="text-gray-600">{roomNumber}</span>
+      </div>
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700">Chair:</span>
+        <span className="text-gray-600">{chair}</span>
+      </div>
+      <div className="flex items-center justify-start gap-x-4 text-lg">
+        <span className="font-bold text-gray-700">Personal W.C:</span>
+        <span className="text-gray-600">{pwc ? "Yes" : "No"}</span>
+      </div>
+    </div>
+  );
+
   // Helper function to determine room color based on occupancy
   const roomColor = (occupied) => (occupied ? "bg-blue-200" : "bg-yellow-400 ");
 
   // Helper function to render individual rooms
   const renderRoom = (room) => {
     let roomClasses =
-      " rounded-xl flex items-center justify-center p-2 text-black hover:cursor-pointer ";
-    let specialRoomClasses = "col-start-2 col-end-4 grid grid-cols-4 ";
+      "rounded-xl flex items-center justify-center p-2 text-black hover:cursor-pointer hover:scale-110 lg:hover:scale-105 duration-300 ease-in hover:font-bold ";
+    let specialRoomClasses = "col-start-2 col-end-4 grid grid-cols-4";
+    const contentDialog = (
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Patient Details</DialogTitle>
+          <DialogDescription>
+            {patientInfo(
+              room["Room Number"],
+              room["P.W.C"],
+              room?.fullName,
+              room?.chair,
+            )}
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    );
+
     if (room.id === "113" || room.id === "126") {
       return (
         <Dialog key={room.id}>
@@ -122,26 +158,23 @@ function FloorPanel(props) {
                 <span className="">{room["Room Number"]}</span>
               </div>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
+            {contentDialog}
           </div>
         </Dialog>
       );
     } else {
       return (
-        <div
-          key={room.id}
-          className={`${roomClasses} ${roomColor(room.occupied)}`}
-        >
-          <span>{room["Room Number"]}</span>
-        </div>
+        <Dialog key={room.id}>
+          <DialogTrigger asChild>
+            <div
+              key={room.id}
+              className={`${roomClasses} ${roomColor(room.occupied)}`}
+            >
+              <span>{room["Room Number"]}</span>
+            </div>
+          </DialogTrigger>
+          {contentDialog}
+        </Dialog>
       );
     }
   };
