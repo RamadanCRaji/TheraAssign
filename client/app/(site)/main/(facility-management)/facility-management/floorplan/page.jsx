@@ -139,6 +139,12 @@ function OverallFloorPlan(props) {
             className={`${roomClasses} ${roomColor(
               room.occupied,
             )} col-span-2 col-start-2`}
+            onClick={() => {
+              formOne.setValue("name", room?.fullName);
+              formOne.setValue("room", room?.["Room Number"]);
+              formOne.setValue("currentChair", room?.chair);
+              formOne.setValue("P.W.C", room?.["P.W.C"]);
+            }}
           >
             <span className="">{room["Room Number"]}</span>
           </div>
@@ -149,6 +155,12 @@ function OverallFloorPlan(props) {
         <div
           key={room.id}
           className={`${roomClasses} ${roomColor(room.occupied)}`}
+          onClick={() => {
+            formOne.setValue("name", room?.fullName);
+            formOne.setValue("room", room?.["Room Number"]);
+            formOne.setValue("currentChair", room?.chair);
+            formOne.setValue("P.W.C", room?.["P.W.C"]);
+          }}
         >
           <span>{room["Room Number"]}</span>
         </div>

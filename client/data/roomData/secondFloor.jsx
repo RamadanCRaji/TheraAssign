@@ -22,7 +22,7 @@ export const eastSide2 = [
   {
     id: "214",
     fullName: "Jane Smith",
-    "Room Number": "215",
+    "Room Number": "214",
     occupied: true,
     chair: getRandomChair(),
     "P.W.C": getRandomBoolean(),
