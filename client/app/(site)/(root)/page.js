@@ -1,9 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
-
 import { UserAuthForm } from "@/components/user-auth-form";
-
-export default function AuthenticationPage() {
+export default async function AuthenticationPage() {
   return (
     <main className="grid h-screen w-screen ">
       <div className="container relative flex h-full flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 ">

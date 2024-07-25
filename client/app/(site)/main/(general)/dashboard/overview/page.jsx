@@ -6,11 +6,7 @@ import RoomChartComponent from "@/components/dashboard/dash-board-panels/RoomCha
 import WheelChairChartComponent from "@/components/dashboard/dash-board-panels/WheelChairChart";
 import FloorPanelCopy from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
 
-import {
-  fetchAvailableWheelChairs,
-  fetchUnAvailableWheelChairs,
-  fetchAllChairs,
-} from "@/src/services/GetData/FetchWheelchairServices";
+import { fetchAllDetails } from "@/src/services/apiService";
 
 function Overview() {
   const [availableChairs, setAvailableChairs] = useState([]);
@@ -18,9 +14,6 @@ function Overview() {
 
   const getWheelChairInfo = async () => {
     try {
-      // because the function they invoke is async we need to place an await here
-      const FREECHAIRS = await fetchAvailableWheelChairs("available");
-      const OCCUPIEDCHAIRS = await fetchUnAvailableWheelChairs("unavailable");
       const ALLCHAIRS = await fetchAllChairs("all"); //the backend can send an object constaining props of 'available' or 'unavailable'
 
       if (!response.ok) {
@@ -56,7 +49,6 @@ function Overview() {
       },
     },
   ]);
-  ``;
 
   const renderChart = (id) => {
     let chartClasses = [
@@ -105,7 +97,11 @@ function Overview() {
   };
 
   useEffect(() => {
-    // getWheelChairInfo();
+    const getPatientDetails = async () => {
+      const data = await fetchAllDetails();
+      console.log(data);
+    };
+    getPatientDetails();
   }, []); // Empty dependency array means this effect runs once after the initial render
 
   return (
@@ -137,39 +133,3 @@ function Overview() {
 }
 
 export default Overview;
-// export default Homepage;
-
-// import React from "react";
-// import UpdatePanel from "@/components/dashboard/dash-board-panels/UpdatePanel";
-// import AdminTaskPanel from "@/components/dashboard/dash-board-panels/AdminTaskPanel";
-// import DashboardActionButton from "@/components/dashboard/dashboard-buttons/DashboardActionButton";
-// import FloorPanelCopy from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
-// function Homepage() {
-//    return (
-//       <section className="flex-grow bg-[#f4f6fc] flex ">
-//          <main className="w-full grow max-w-[1830px] p-2.5">
-//             <div
-//                className={`h-full w-full flex grid grid-cols-1 grid-rows-2 gap-y-2.5`}
-//             >
-//                {/* top section */}
-//                <section className=" grid grid-cols-12 gap-x-2.5">
-//                   <section className="col-span-5 grid grid-cols-1 grid-rows-2 border border-red-600">
-//                      <UpdatePanel />
-//                      <AdminTaskPanel />
-//                   </section>
-//                   <div className=" col-span-7 py-2 px-5 bg-[#ffffff]">
-//                      <FloorPanelCopy />
-//                   </div>
-//                </section>
-//                {/* bottom section */}
-//                <section className=" text-white grid grid-cols-2 gap-x-2.5 ">
-//                   <div className=" bg-gray-800 cols-span-1">bottom child 1</div>
-//                   <div className=" bg-gray-700 col-span-1"> bottom child 2</div>
-//                </section>
-//             </div>
-//          </main>
-//       </section>
-//    );
-// }
-
-// export default Homepage;
