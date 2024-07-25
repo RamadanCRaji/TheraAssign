@@ -12,20 +12,20 @@ function Overview() {
   const [availableChairs, setAvailableChairs] = useState([]);
   const [UnavailableChairs, setUnAvailableChairs] = useState([]);
 
-  const getWheelChairInfo = async () => {
-    try {
-      const ALLCHAIRS = await fetchAllChairs("all"); //the backend can send an object constaining props of 'available' or 'unavailable'
+  // const getWheelChairInfo = async () => {
+  //   try {
+  //     const ALLCHAIRS = await fetchAllChairs("all"); //the backend can send an object constaining props of 'available' or 'unavailable'
 
-      if (!response.ok) {
-        throw new Error("Error fetching wheelchair info:", error);
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Error fetching wheelchair info:", error);
+  //     }
 
-      setUnAvailableChairs((prevData) => OCCUPIEDCHAIRS);
-      setAvailableChairs((prevData) => FREECHAIRS);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  //     setUnAvailableChairs((prevData) => OCCUPIEDCHAIRS);
+  //     setAvailableChairs((prevData) => FREECHAIRS);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
   const [FloorPanelCopyComponent, setFloorPanelCopyComponent] = useState([
     {
