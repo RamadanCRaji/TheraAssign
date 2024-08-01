@@ -30,4 +30,4 @@ const chairSchema = new Schema({
    },
 });
 
-module.exports = models.Client || model("Chair", chairSchema);
+module.exports = models.Chair || model("Chair", chairSchema);

@@ -21,4 +21,4 @@ const patientSchema = new Schema({
    },
 });
 
-module.exports = models.patientSchema || model("Patient", patientSchema);
+module.exports = models.Patient || model("Patient", patientSchema);

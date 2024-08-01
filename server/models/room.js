@@ -26,4 +26,21 @@ const roomSchema = new Schema({
       },
    },
 });
-module.exports = models.roomSchema || model("Room", roomSchema);
+module.exports = models.Room || model("Room", roomSchema);
+
+/**"roomNumber": { "$numberInt": "102" },
+  "location": {
+    "wing": "west",
+    "floor": { "$numberInt": "1" }
+  },
+  "patientId": {} 
+  
+  "roomNumber": { "$numberInt": "102" },
+  "location": {
+    "wing": "west",
+    "floor": { "$numberInt": "1" }
+  },
+  "patientId": {
+    "bsonType": "objectId",
+    "ref": "Patient"
+  }*/
