@@ -29,6 +29,9 @@ yarn-error.log*
 .env*.local
 .env
 
+#removing all dot underscore files
+*._*
+
 # vercel
 .vercel
 
