@@ -71,9 +71,9 @@ async function swapPatients(patientId1, patientId2) {
 
 /*Room change if room is empty*/
 const mongoose = require("mongoose");
-const Patient = require("../../models/Patient");
-const Room = require("../../models/Room").default;
-const Chair = require("../../models/Chair");
+const Patient = require("../models/patient");
+const Room = require("../models/room").default;
+const Chair = require("../models/chair");
 
 // async function changePatientRoom(req, res) {
 //     const { patientId, newRoomId, } = req.body;

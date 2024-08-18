@@ -45,7 +45,11 @@ if (process.env.NODE_ENV === "development") {
 
 // API routes
 const authRouter = require("./routes/api");
-app.use("/api", authRouter); // Mount the auth router
+const wheelChairRoutes = require("./routes/wheelChairRoutes");
+app.use("/api/", authRouter); // Mount the auth router
+app.use("/api/wheelchair/", wheelChairRoutes); // Mount the auth router
+app.use("/api/rooms/", authRouter); // Mount the auth router
+app.use("/api/patient/", authRouter); // Mount the auth router
 
 // Define the default port using environment variable with a fallback
 const PORT = process.env.PORT || 8000;
