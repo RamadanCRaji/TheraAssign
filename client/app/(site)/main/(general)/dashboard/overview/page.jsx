@@ -6,49 +6,10 @@ import RoomChartComponent from "@/components/dashboard/dash-board-panels/RoomCha
 import WheelChairChartComponent from "@/components/dashboard/dash-board-panels/WheelChairChart";
 import FloorPanelCopy from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
 
-import { fetchAllDetails } from "@/src/services/apiService";
+import { fetchAllHospitalDetails } from "@/src/services/apiService";
 
 function Overview() {
-  const [availableChairs, setAvailableChairs] = useState([]);
-  const [UnavailableChairs, setUnAvailableChairs] = useState([]);
-
-  // const getWheelChairInfo = async () => {
-  //   try {
-  //     const ALLCHAIRS = await fetchAllChairs("all"); //the backend can send an object constaining props of 'available' or 'unavailable'
-
-  //     if (!response.ok) {
-  //       throw new Error("Error fetching wheelchair info:", error);
-  //     }
-
-  //     setUnAvailableChairs((prevData) => OCCUPIEDCHAIRS);
-  //     setAvailableChairs((prevData) => FREECHAIRS);
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
-
-  const [FloorPanelCopyComponent, setFloorPanelCopyComponent] = useState([
-    {
-      id: "Roomchart",
-      roomChart: RoomChartComponent,
-      occupancyComparison: ["Occupied Room", "Available Room"],
-      occupancyDescription: "Occupied Room : Available Room",
-      status: {
-        "Occupied Rooms": 60,
-        "Free Rooms": 60,
-      },
-    },
-    {
-      id: "wheelChairPanel",
-      wheelChairChart: WheelChairChartComponent,
-      occupancyDescription: ["Occupied WheelChair : Available WheelChair "],
-      occupancyComparison: "Occupied W.C : Free W.C",
-      status: {
-        "Occupied Rooms": 60,
-        "Free Rooms": 60,
-      },
-    },
-  ]);
+  const [info, setInfo] = useState(null);
 
   const renderChart = (id) => {
     let chartClasses = [
@@ -81,14 +42,24 @@ function Overview() {
               <label htmlFor="occupied" className=" mr-auto inline-block">
                 {id === "RoomChart" ? "Occupied Rooms" : "Occupied W.C"}
               </label>
-              <span className="inline-block text-black">60</span>
+              <span className="inline-blocdk text-black">
+                {id === "RoomChart"
+                  ? info?.rooms.filter((room) => room["PatientId"]).length
+                  : info?.chairs.filter((chair) => !chair.Status.Available)
+                      .length}
+              </span>
             </div>
             <div className="flex  text-[grey]">
-              <input type="radio" id="occupied" className="mr-1" />
-              <label htmlFor="occupied" className="mr-auto inline-block">
+              <input type="radio" id="free" className="mr-1" />
+              <label htmlFor="free" className="mr-auto inline-block">
                 {id === "RoomChart" ? "Free Rooms" : "Free W.C"}
               </label>
-              <span className="inline-block text-black">60</span>
+              <span className="inline-block text-black">
+                {id === "RoomChart"
+                  ? info?.rooms.filter((room) => !room["PatientId"]).length
+                  : info?.chairs.filter((chair) => chair.Status.Available)
+                      .length}
+              </span>
             </div>
           </section>
         </div>
@@ -98,12 +69,17 @@ function Overview() {
 
   useEffect(() => {
     const getPatientDetails = async () => {
-      const data = await fetchAllDetails();
-      console.log(data);
+      const data = await fetchAllHospitalDetails();
+
+      setInfo({ ...data });
+      // setLoading(false);
     };
     getPatientDetails();
-  }, []); // Empty dependency array means this effect runs once after the initial render
+  }, []);
 
+  // if (loading) {
+  //   return <div>Loading</div>;
+  // }
   return (
     <section className="h-full grow bg-[#f4f6fc] ">
       <main className="h-full w-full grow  p-2 ">

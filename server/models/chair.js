@@ -1,30 +1,30 @@
 const mongoose = require("mongoose");
 const { Schema, model, models } = mongoose;
 const chairSchema = new Schema({
-   tagId: {
+   TagId: {
       type: String,
       required: true,
    },
-   status: {
-      available: {
+   Status: {
+      Available: {
          type: Boolean,
          default: true,
       },
-      roomId: {
+      RoomId: {
          type: Schema.Types.ObjectId,
          ref: "Room",
          default: null,
       },
    },
-   type: {
+   Type: {
       type: String,
       required: true,
    },
-   dimension: {
+   Dimension: {
       type: String,
       required: true,
    },
-   version: {
+   Version: {
       type: String,
       required: true,
    },

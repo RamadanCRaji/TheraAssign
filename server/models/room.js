@@ -1,20 +1,16 @@
 const mongoose = require("mongoose");
 const { Schema, model, models } = mongoose;
 const roomSchema = new Schema({
-   patientId: {
+   PatientId: {
       type: Schema.Types.ObjectId,
       ref: "Patient",
       default: null,
    },
-   roomNumber: {
+   "Room Number": {
       type: Number,
       required: true,
    },
-   occupied: {
-      type: Boolean,
-      default: false,
-   },
-   location: {
+   Location: {
       wing: {
          type: String,
          enum: ["west", "east"],
@@ -27,20 +23,3 @@ const roomSchema = new Schema({
    },
 });
 module.exports = models.Room || model("Room", roomSchema);
-
-/**"roomNumber": { "$numberInt": "102" },
-  "location": {
-    "wing": "west",
-    "floor": { "$numberInt": "1" }
-  },
-  "patientId": {} 
-  
-  "roomNumber": { "$numberInt": "102" },
-  "location": {
-    "wing": "west",
-    "floor": { "$numberInt": "1" }
-  },
-  "patientId": {
-    "bsonType": "objectId",
-    "ref": "Patient"
-  }*/

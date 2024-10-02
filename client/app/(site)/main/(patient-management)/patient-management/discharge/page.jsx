@@ -39,13 +39,9 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // Self-built modules
-import WheelChairChartComponent from "@/components/dashboard/dash-board-panels/WheelChairChart";
-import RoomChartComponent from "@/components/dashboard/dash-board-panels/RoomChart";
-import { fetchPatientInfo } from "@/src/services/GetData/FetchPatientsInfo";
-import { DummyDataPatientInfo } from "@/data/patientData/PatientInfo";
-import { boolean } from "zod";
-import { assignPersonalChair } from "@/src/services/PostData/PostPersonalWC";
+
 import FloorPanel from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
+import { fetchAllPatients, dischargePatient } from "@/src/services/apiService";
 
 // Patient Search  schema for validation
 const FormOneSchema = z.object({
@@ -55,79 +51,52 @@ const FormOneSchema = z.object({
 
 //final submission schema
 const FormTwoSchema = z.object({
-  chairId: z.string().min(3, { message: "Select chair" }),
-  firstName: z.string().min(3, { message: "First name needed" }),
-  lastName: z.string().min(3, { message: "Last name needed" }),
-  roomId: z.string().min(3, { message: "Assign room" }),
+  chairId: z.string().min(3),
+  firstName: z.string().min(3, { message: "invalid selection" }),
+  lastName: z.string().min(3, { message: "invalid selection" }),
+  roomNumber: z.string().min(3, { message: "invalid selection" }),
   discharge: z.boolean().refine((val) => val === true || val === false, {
     message: "You must select a choice",
   }),
 });
-
+const formTwoDefaultValues = {
+  chairId: "",
+  firstName: "",
+  lastName: "",
+  roomNumber: "",
+  discharge: undefined,
+};
+const formOneDefaultValues = { firstName: "", lastName: "" };
 function DischargePatient() {
   // Form setup
   const formOne = useForm({
     resolver: zodResolver(FormOneSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-    },
+    defaultValues: formOneDefaultValues,
   });
   const formTwo = useForm({
     resolver: zodResolver(FormTwoSchema),
-    defaultValues: {
-      chairId: "",
-      firstName: "",
-      lastName: "",
-      roomId: "",
-      discharge: undefined,
-    },
+    defaultValues: formTwoDefaultValues,
   });
 
   //State to store all patient information that was retrieved from the backend
   const [all_patients_info, set_all_patients_info] = useState([]);
+  const [centralPatientData, set_centralPatient_data] = useState([]);
 
   // saving response from the backend regarding if personalChair was given or not
   const [backendResponse, setBackendResponse] = useState(undefined);
 
-  // Function to fetch and set chair data from the backend
-  const getPatientInfo = async () => {
-    try {
-      const ALLPATIENTSINFO = await fetchPatientInfo("all");
-      set_all_patients_info((prev) => ALLPATIENTSINFO);
-
-      setChairData({
-        [STANDARD]: standardChairs,
-        [BARIATRIC]: bariatricChairs,
-        [TILTING]: tiltInSpaceChairs,
-      });
-    } catch (error) {
-      console.error("Failed to fetch chairs:", error);
-    }
-  };
-
-  // useEffect for demo purpose-- open to show
-  useEffect(() => {
-    set_all_patients_info((prev) => [...DummyDataPatientInfo]);
-  }, [DummyDataPatientInfo]);
-
-  // Uncomment to fetch chairs from the backend
-  // useEffect(() => {
-  //   alert("i was triggered again");
-  // }, []);
   const processPatientSearch = (data) => {
-    ["firstName", "lastName", "roomId", "chairId"].forEach((e) =>
-      formTwo.resetField(e),
-    );
+    formTwo.reset(formTwoDefaultValues);
     const { firstName, lastName } = data;
-    console.log({ data });
 
     // Create a lower case full name after trimming spaces
     const fullName = `${firstName.trim()} ${lastName.trim()}`.toLowerCase();
 
     // Filter patient information based on full name
-    const filteredPatients = DummyDataPatientInfo.filter(
-      (e) => e.fullName.toLowerCase() === fullName,
+    const filteredPatients = all_patients_info.filter(
+      (e) =>
+        e.firstName.toLowerCase() === firstName.toLowerCase() &&
+        e.lastName.trim().toLowerCase() === lastName.trim().toLowerCase(),
     );
 
     // Check the results and update patient info accordingly
@@ -136,28 +105,55 @@ function DischargePatient() {
 
     // Update the state with the found patients or the fallback value
     set_all_patients_info(() => patientOfInterest);
-
-    console.log(patientOfInterest);
   };
 
-  const onSubmit = async (data) => {
-    console.log({ data });
+  const onSubmit = async ({ firstName, lastName, roomNumber, discharge }) => {
+    // checking if the data is empty
+
     try {
-      if (!data?.defaut) return;
-      //for now we will use data as an but know that you will need to change the argument to 'update'
-      if (data) {
+      // Find the matching patient based on name and room number
+      const patient = centralPatientData.find(
+        ({ firstName: fName, lastName: lName, roomId }) =>
+          fName === firstName &&
+          lName === lastName &&
+          roomId["Room Number"] == roomNumber,
+      );
+
+      // Spread the found patient object and add the personal chair data
+      const payload = {
+        patientId: patient._id,
+        chairId: patient?.chairId?._id || false,
+        discharge,
+      };
+      const response = await dischargePatient(payload);
+      setBackendResponse((prev) => [response]);
+      if (payload) {
         toast({
-          title: "You submitted the following values:",
-          description: `${Object.values(data)}`,
+          title: "Discharge Patient",
+          description: `your request has beeen submitted`,
         });
       }
     } catch (error) {
-      // setBackendResponse((prev) => [
-      //   `"Error assigning chair:", ${error.message}`,
-      // ]);
-      console.error(error);
+      setBackendResponse((prev) => [`${error.message}`]);
     }
   };
+  useEffect(() => {
+    const getAllPatientInfo = async () => {
+      try {
+        const data = await fetchAllPatients();
+        set_all_patients_info((prev) => [...data]); //
+        set_centralPatient_data((prev) => [...data]);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: `${error.message}`,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+      }
+    };
+    getAllPatientInfo();
+  }, []);
   return (
     <section className="h-full grow bg-[#eeebeb]">
       <main className="h-full w-full grow  px-2 py-2 text-black">
@@ -242,35 +238,35 @@ function DischargePatient() {
                         <ScrollArea className="h-12 w-full whitespace-nowrap">
                           {/* pre-cursor to selecting final patients */}
                           <div className=" flex w-full items-center justify-start  gap-x-2 ">
-                            {all_patients_info.map((e, i) => {
+                            {all_patients_info.map((patient) => {
                               //utilizing optional chaining instead of nullish coalescing operator
-                              return e?.fullName ? (
-                                <div className="h-full" key={e["ChairId"]}>
+                              return patient?.firstName ? (
+                                <div className="h-full" key={patient._id}>
                                   <button
                                     className="h-9 w-full rounded-md border-2 border-black bg-[#b4c5e4] px-10 transition duration-300 ease-in hover:scale-105 hover:bg-[#3a515c] hover:font-bold hover:text-[#c3cbd2] hover:shadow-lg"
                                     onClick={() => {
-                                      formTwo.setValue(
-                                        "firstName",
-                                        e.fullName.split(" ")[0],
-                                      );
-
-                                      formTwo.setValue(
-                                        "lastName",
-                                        e.fullName.split(" ")[1],
-                                      );
-
-                                      formTwo.setValue(
-                                        "roomId",
-                                        String(e.roomId),
-                                      );
-
-                                      formTwo.setValue(
-                                        "chairId",
-                                        e.currentChair,
+                                      const [firstName, lastName] = [
+                                        patient.firstName,
+                                        patient.lastName,
+                                      ];
+                                      const fieldMap = {
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        roomNumber: String(
+                                          patient.roomId["Room Number"],
+                                        ),
+                                        chairId:
+                                          patient.chairId?.TagId ||
+                                          "no assigned chair",
+                                      };
+                                      Object.entries(fieldMap).forEach(
+                                        ([key, value]) => {
+                                          formTwo.setValue(key, value);
+                                        },
                                       );
                                     }}
                                   >
-                                    {e?.fullName}
+                                    {`${patient.firstName} ${patient.lastName}`}
                                   </button>
                                 </div>
                               ) : (
@@ -361,7 +357,7 @@ function DischargePatient() {
                                 )}
                               />
                               <FormField
-                                name="roomId"
+                                name="roomNumber"
                                 control={formTwo.control}
                                 render={({ field }) => (
                                   // formItem is using react context under the hood, anytime error message comes up the FormMessage component will display it under the hood
@@ -372,7 +368,7 @@ function DischargePatient() {
                                     <FormControl className="">
                                       <Input
                                         {...field}
-                                        id="roomId"
+                                        id="roomNumber"
                                         className="  max-w-[75%] grow border-2  border-gray-500"
                                         placeholder="Current Room"
                                         disabled={true}
@@ -436,8 +432,7 @@ function DischargePatient() {
                                         Are you absolutely sure?
                                       </AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        This action assign the patient a
-                                        personal chair once you submit.
+                                        This action cannot be undone.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -468,7 +463,10 @@ function DischargePatient() {
                   </div>
                   <div className=" max-w-lg border border-blue-400 px-10 py-3 2xl:py-10 ">
                     {backendResponse?.map((e, i) => (
-                      <span className="text-lg font-bold italic" key={i}>
+                      <span
+                        className="text-lg font-bold italic text-black"
+                        key={i}
+                      >
                         {e}
                       </span>
                     )) ?? <span>nothing to display</span>}
@@ -492,9 +490,6 @@ function DischargePatient() {
 
 export default DischargePatient;
 
-{
-  /* 
-  potential issues- I need confirm also in the back the property of data.discharge so a doctor does not send a wrong information or manipulate the back end into doing their bidding
-
- */
-}
+// to dicharge a patient, all i need is their patientID, the backend i can populate the roomId and get the chair that the paeit
+// patient was using
+//

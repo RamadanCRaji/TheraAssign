@@ -4,8 +4,10 @@ Import core node module for server operations
 ==============================================
 */
 const express = require("express");
+const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
+const cors = require("cors");
 
 /*
 ==================================================================
@@ -23,10 +25,11 @@ const app = express();
 connectDB();
 
 // Apply middlewares for request data handling
-app.use(express.urlencoded({ extended: false })); // Parses URL-encoded bodies
-app.use(express.json()); // Parses JSON bodies
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false })); // Parses URL-encoded bodies
 
-// Method override
+// Method override to support legacy HTTP methods
 app.use(
    methodOverride(function (req, res) {
       if (req.body && typeof req.body === "object" && "_method" in req.body) {
@@ -44,24 +47,24 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // API routes
-const authRouter = require("./routes/api");
-const wheelChairRoutes = require("./routes/wheelChairRoutes");
-app.use("/api/", authRouter); // Mount the auth router
-app.use("/api/wheelchair/", wheelChairRoutes); // Mount the auth router
-app.use("/api/rooms/", authRouter); // Mount the auth router
-app.use("/api/patient/", authRouter); // Mount the auth router
+const authentication = require("./routes/api");
+const wheelChairRouter = require("./routes/wheelChairRoutes");
+const roomsRouter = require("./routes/roomRoutes");
+const dashBoardRouter = require("./routes/dashBoardInfoRoutes");
+const patientRouter = require("./routes/patientRoutes");
+
+app.use("/api/auth", authentication); // Mount the authentication router
+app.use("/api/dashBoardInfo", dashBoardRouter); // Mount the dashboard info router
+app.use("/api/wheelchair", wheelChairRouter); // Mount the wheelchair management router
+app.use("/api/rooms", roomsRouter); // Mount the room management router
+app.use("/api/patient", patientRouter); // Mount the patient management router
 
 // Define the default port using environment variable with a fallback
 const PORT = process.env.PORT || 8000;
 
 // Start the server and log the mode and port it's running on
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
    console.log(
       `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`
    );
 });
-
-/**
- * Create a middleware to handle authentication
- *
- */

@@ -41,12 +41,9 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // Self-built modules
-import { fetchPatientInfo } from "@/src/services/GetData/FetchPatientsInfo";
-import { DummyDataPatientInfo } from "@/data/patientData/PatientInfo";
-import { boolean } from "zod";
 import FloorPanel from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
-import { eastSide } from "@/data/roomData/firstFloor";
 import { swapPatientData } from "@/lib/utils";
+import { fetchAllPatients, swapPatientRooms } from "@/src/services/apiService";
 
 // Patient Search schema for validation
 const FormOneSchema = z.object({
@@ -81,7 +78,7 @@ const formTwoDefaultValues = {
   patient2_currentChair: "",
   patient2_firstName: "",
   patient2_lastName: "",
-  patient2_roomId: "undefined",
+  patient2_roomId: "",
 };
 
 function SwapPatientRooms() {
@@ -101,29 +98,31 @@ function SwapPatientRooms() {
   // Saving response from the backend regarding if personalChair was given or not
   const [backendResponse, setBackendResponse] = useState(undefined);
 
-  // Function to fetch and set all patient info data from the backend
-  const getPatientInfo = async () => {
-    try {
-      const ALLPATIENTSINFO = await fetchPatientInfo("all");
-      setAllPatientsInfo(ALLPATIENTSINFO);
-    } catch (error) {
-      console.error("Failed to fetch patient info:", error);
-    }
-  };
-
-  // useEffect for demo purpose-- open to show
   useEffect(() => {
-    setAllPatientsInfo([...DummyDataPatientInfo]);
+    const getAllPatientInfo = async () => {
+      try {
+        const data = await fetchAllPatients();
+        setAllPatientsInfo((prev) => [...data]);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: `${error.message}`,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+      }
+    };
+    getAllPatientInfo();
   }, []);
 
   const processPatientSwap = (data) => {
     const { patient1, patient2 } = data;
-
-    // Handling the case where the same patient is selected
     if (patient1 === patient2) return;
+    let currentPatient1 = allPatientsInfo.find((e) => e._id === patient1);
+    let currentPatient2 = allPatientsInfo.find((e) => e._id === patient2);
 
-    // Swapped patientData
-    const swappedData = swapPatientData(data, DummyDataPatientInfo);
+    // Swapped patientData--> passing both patient of interest and the overall hospital patients in here
+    const swappedData = swapPatientData(data, allPatientsInfo);
 
     // Set the values in the form
     Object.entries(swappedData).forEach(([key, value]) => {
@@ -132,28 +131,56 @@ function SwapPatientRooms() {
   };
 
   const onSubmit = async (formdata) => {
-    console.log({ formdata });
+    const {
+      patient1_firstName,
+      patient1_lastName,
+      patient2_firstName,
+      patient2_lastName,
+    } = formdata;
+
+    let patient1 = allPatientsInfo.find(
+      ({ firstName, lastName }) =>
+        firstName === patient1_firstName && lastName === patient1_lastName,
+    );
+    let patient2 = allPatientsInfo.find(
+      ({ firstName, lastName }) =>
+        firstName === patient2_firstName && lastName === patient2_lastName,
+    );
+
+    const temp_Data_for_switching = JSON.parse(JSON.stringify(patient1));
+    // Ensure patient1 has the correct structure before updating
+    patient1 = {
+      ...patient1,
+      roomId: {
+        ...patient1.roomId,
+        _id: patient2.roomId._id,
+        "Room Number": Number(patient2.roomId["Room Number"]),
+      },
+    };
+    patient2 = {
+      ...patient2,
+
+      roomId: {
+        ...patient2.roomId,
+        _id: temp_Data_for_switching.roomId._id,
+        "Room Number": Number(temp_Data_for_switching.roomId["Room Number"]),
+      },
+    };
+    const payload = { patient1, patient2 };
+
     try {
-      const prom = new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("patient room has been updated");
-        }, 1000);
-      });
-      const update = await prom;
-      console.log(update);
-      setBackendResponse([`${update}`]);
-      /*
-      const update = await assignPersonalChair(data)
-      setBackendResponse([...update]);
-      */
       if (formdata) {
         toast({
-          title: "You submitted the following values:",
-          description: `${Object.values(formdata)}`,
+          title: "Swap Patients",
+          description: `Your Request to swap Patients has been submitted`,
         });
       }
+      const response = await swapPatientRooms(payload);
+      setBackendResponse((prev) => [response]);
     } catch (error) {
-      console.error(error);
+      setBackendResponse((prev) => [
+        `"Error swapping patients:", ${error.message}`,
+      ]);
     }
   };
 
@@ -200,14 +227,14 @@ function SwapPatientRooms() {
                                   </FormControl>
                                   <SelectContent className="w-full">
                                     <SelectGroup>
-                                      <SelectLabel>Patients</SelectLabel>
-                                      {DummyDataPatientInfo.map((e, i) => (
+                                      <SelectLabel>Patient 1</SelectLabel>
+                                      {allPatientsInfo?.map((patient) => (
                                         <SelectItem
-                                          value={e.fullName}
-                                          key={i}
+                                          value={patient._id}
+                                          key={patient._id}
                                           className="w-full"
                                         >
-                                          {e.fullName}
+                                          {`${patient.lastName} ${patient.firstName}`}
                                         </SelectItem>
                                       ))}
                                     </SelectGroup>
@@ -233,14 +260,14 @@ function SwapPatientRooms() {
                                   </FormControl>
                                   <SelectContent className="w-full">
                                     <SelectGroup>
-                                      <SelectLabel>Patients</SelectLabel>
-                                      {DummyDataPatientInfo.map((e, i) => (
+                                      <SelectLabel>Patients 2</SelectLabel>
+                                      {allPatientsInfo.map((patient) => (
                                         <SelectItem
-                                          value={e.fullName}
-                                          key={i}
+                                          value={patient._id}
+                                          key={patient._id}
                                           className="w-full"
                                         >
-                                          {e.fullName}
+                                          {`${patient.lastName} ${patient.firstName}`}
                                         </SelectItem>
                                       ))}
                                     </SelectGroup>

@@ -19,6 +19,7 @@ const patientSchema = new Schema({
       ref: "Room",
       required: true,
    },
+   personal_Wheel_chair: { type: Boolean, default: false },
 });
 
 module.exports = models.Patient || model("Patient", patientSchema);

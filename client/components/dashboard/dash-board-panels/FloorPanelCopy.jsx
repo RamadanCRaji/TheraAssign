@@ -1,18 +1,10 @@
 // React and Next.js imports
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useState, useEffect } from "react";
 
 // Data imports (self-built modules)
-import { westSide, eastSide } from "@/data/roomData/firstFloor";
-import { eastSide2, westSide2 } from "@/data/roomData/secondFloor";
 
 // Service imports (self-built modules)
-import {
-  fetchFirstFloorData,
-  fetchSecondFloorData,
-} from "@/src/services/GetData/FetchRoomServices";
+import { fetchAllRoomData } from "@/src/services/apiService";
 
 // Component imports (self-built modules)
 import { Button } from "@/components/ui/button";
@@ -26,26 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 
 // Style definitions
 const horizontalLayout = `flex gap-10 justify-center`;
@@ -55,33 +27,20 @@ const verticalLayout = `flex gap-10 justify-around flex-col`;
 function FloorPanel({ layoutPlan }) {
   const [show2ndFloorPlan, setshow2ndFloorPlan] = useState(false);
   const [show1stFloorPlan, setshow1stFloorPlan] = useState(true);
+  const [floorData, setFloorData] = useState([]);
 
-  const [firstFloorRooms, setFirstFloorRooms] = useState([westSide, eastSide]);
-  const [secondFloorRooms, setSecondFloorRooms] = useState([
-    eastSide2,
-    westSide2,
-  ]);
-  // const fetchAndUpdateRoomInfo = async () => {
-  //   try {
-  //     // Fetch data for first and second floors.
-  //     const firstFloorResponse = await fetchFirstFloorData();
-  //     const secondFloorResponse = await fetchSecondFloorData();
+  const fetchAndUpdateRoomInfo = async () => {
+    try {
+      const data = await fetchAllRoomData();
+      setFloorData((prev) => [...data]);
+    } catch (error) {
+      console.log("Error fetching room data:", error.message);
+    }
+  };
 
-  //     // Convert the responses to JSON.
-  //     const firstFloorRooms = await firstFloorResponse.json();
-  //     const secondFloorRooms = await secondFloorResponse.json();
-
-  //     // Updated states with the relevant data from the responses.
-  //     setFirstFloorRooms([firstFloorRooms[0], firstFloorRooms[1]]);
-  //     setSecondFloorRooms([secondFloorRooms[0], secondFloorRooms[1]]);
-  //   } catch (error) {
-  //     console.log("Error fetching room data:", error.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchAndUpdateRoomInfo();
-  // }, []);
+  useEffect(() => {
+    fetchAndUpdateRoomInfo();
+  }, []);
 
   const floorPlanSwitch1 = () => {
     if (show1stFloorPlan) {
@@ -91,6 +50,7 @@ function FloorPanel({ layoutPlan }) {
       setshow2ndFloorPlan((prevSate) => !prevSate);
     }
   };
+
   const floorPlanSwitch2 = () => {
     if (show1stFloorPlan && !show2ndFloorPlan) {
       setshow1stFloorPlan((prevSate) => !prevSate);
@@ -100,83 +60,95 @@ function FloorPanel({ layoutPlan }) {
     }
   };
 
-  const patientInfo = (roomNumber, pwc, fullName, chair) => (
-    <div className="grid gap-4 rounded-lg bg-white p-4 shadow-md">
-      <div className="flex items-center justify-start gap-x-4 text-lg">
-        <span className="font-bold text-gray-700"> Patient Name:</span>
-        <span className="text-gray-600">{fullName}</span>
-      </div>
-      <div className="flex items-center justify-start gap-x-4 text-lg">
-        <span className="font-bold text-gray-700">Room:</span>
-        <span className="text-gray-600">{roomNumber}</span>
-      </div>
-      <div className="flex items-center justify-start gap-x-4 text-lg">
-        <span className="font-bold text-gray-700">Chair:</span>
-        <span className="text-gray-600">{chair}</span>
-      </div>
-      <div className="flex items-center justify-start gap-x-4 text-lg">
-        <span className="font-bold text-gray-700">Personal W.C:</span>
-        <span className="text-gray-600">{pwc ? "Yes" : "No"}</span>
-      </div>
-    </div>
-  );
-
-  // Helper function to determine room color based on occupancy
-  const roomColor = (occupied) => (occupied ? "bg-blue-200" : "bg-yellow-400 ");
-
   // Helper function to render individual rooms
-  const renderRoom = (room) => {
+  const renderRoom = (floor, wing, allRoomData) => {
     let roomClasses =
       "rounded-xl flex items-center justify-center p-2 text-black hover:cursor-pointer hover:scale-110 lg:hover:scale-105 duration-300 ease-in hover:font-bold ";
+
     let specialRoomClasses = "col-start-2 col-end-4 grid grid-cols-4";
-    const contentDialog = (
+
+    // Helper function to determine room color based on occupancy
+    const roomColor = (occupied) =>
+      occupied ? "bg-blue-200" : "bg-yellow-400 ";
+    //array of object
+    const rooms = allRoomData?.filter((room) => {
+      return room?.Location?.floor === floor && room?.Location?.wing === wing;
+    });
+
+    // content Dialog purpose is to show the modal for each each room when we click on it
+    const contentDialog = (room) => (
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Patient Details</DialogTitle>
           <DialogDescription>
-            {patientInfo(
-              room["Room Number"],
-              room["P.W.C"],
-              room?.fullName,
-              room?.chair,
-            )}
+            <div className="grid gap-4 rounded-lg bg-white p-4 shadow-md">
+              <div className="flex items-center justify-start gap-x-4 text-lg">
+                <span className="font-bold text-gray-700"> Patient Name:</span>
+                <span className="text-gray-600">
+                  {room?.PatientId?.firstName}
+                </span>
+              </div>
+              <div className="flex items-center justify-start gap-x-4 text-lg">
+                <span className="font-bold text-gray-700">Room:</span>
+                <span className="text-gray-600">{room["Room Number"]}</span>
+              </div>
+              <div className="flex items-center justify-start gap-x-4 text-lg">
+                <span className="font-bold text-gray-700">Chair:</span>
+                <span className="text-gray-600">
+                  {room?.PatientId?.chairId?.TagId}
+                </span>
+              </div>
+              <div className="flex items-center justify-start gap-x-4 text-lg">
+                <span className="font-bold text-gray-700">Personal W.C:</span>
+                <span className="text-gray-600">
+                  {room?.PatientId?.personal_Wheel_chair ? "Yes" : "No"}
+                </span>
+              </div>
+            </div>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
     );
 
-    if (room.id === "113" || room.id === "126") {
-      return (
-        <Dialog key={room.id}>
-          <div className={`${specialRoomClasses}`}>
+    // handling cases for special rooms
+    //handling cases for the rest of the rooms( which is an arry of an)
+    return rooms?.map((room) => {
+      const isSpecialRoom =
+        room["Room Number"] === 113 || room["Room Number"] === 126;
+      const roomLayoutClass = isSpecialRoom ? specialRoomClasses : roomClasses;
+      if (isSpecialRoom) {
+        return (
+          <Dialog key={room._id}>
+            <div className={`${roomLayoutClass}`}>
+              <DialogTrigger asChild>
+                <div
+                  className={`${roomClasses} ${roomColor(
+                    room?.PatientId,
+                  )} col-span-2 col-start-2`}
+                >
+                  <span className="">{room["Room Number"]}</span>
+                </div>
+              </DialogTrigger>
+              {contentDialog(room)}
+            </div>
+          </Dialog>
+        );
+      } else {
+        return (
+          <Dialog key={room._id}>
             <DialogTrigger asChild>
               <div
-                className={`${roomClasses} ${roomColor(
-                  room.occupied,
-                )} col-span-2 col-start-2`}
+                key={room._id}
+                className={`${roomLayoutClass} ${roomColor(room?.PatientId)}`}
               >
-                <span className="">{room["Room Number"]}</span>
+                <span>{room["Room Number"]}</span>
               </div>
             </DialogTrigger>
-            {contentDialog}
-          </div>
-        </Dialog>
-      );
-    } else {
-      return (
-        <Dialog key={room.id}>
-          <DialogTrigger asChild>
-            <div
-              key={room.id}
-              className={`${roomClasses} ${roomColor(room.occupied)}`}
-            >
-              <span>{room["Room Number"]}</span>
-            </div>
-          </DialogTrigger>
-          {contentDialog}
-        </Dialog>
-      );
-    }
+            {contentDialog(room)}
+          </Dialog>
+        );
+      }
+    });
   };
   return (
     <section className="h-full w-full">
@@ -209,7 +181,7 @@ function FloorPanel({ layoutPlan }) {
                   west
                 </Button>
                 <div className=" grid w-full grow grid-cols-4 grid-rows-4 gap-2 text-black ">
-                  {firstFloorRooms[0].map((room) => renderRoom(room))}
+                  {renderRoom(1, "west", floorData)}
                 </div>
               </section>
               <section
@@ -219,7 +191,7 @@ function FloorPanel({ layoutPlan }) {
                   east
                 </Button>
                 <div className=" grid w-full grow grid-cols-4 grid-rows-4 gap-2 text-black ">
-                  {firstFloorRooms[1].map((room) => renderRoom(room))}
+                  {renderRoom(1, "east", floorData)}
                 </div>
               </section>
             </div>
@@ -238,7 +210,7 @@ function FloorPanel({ layoutPlan }) {
                   west
                 </Button>
                 <div className=" grid w-full grow grid-cols-4 grid-rows-4 gap-2 text-black ">
-                  {secondFloorRooms[0].map((room) => renderRoom(room))}
+                  {renderRoom(2, "west", floorData)}
                 </div>
               </section>
               <section
@@ -248,7 +220,7 @@ function FloorPanel({ layoutPlan }) {
                   east
                 </Button>
                 <div className=" grid w-full grow grid-cols-4 grid-rows-4 gap-2 text-black ">
-                  {secondFloorRooms[1].map((room) => renderRoom(room))}
+                  {renderRoom(2, "east", floorData)}
                 </div>
               </section>
             </div>
@@ -259,70 +231,3 @@ function FloorPanel({ layoutPlan }) {
   );
 }
 export default FloorPanel;
-// old way of the layout wwhen i used grid for the way the rooms should show up
-//   return (
-//    <section className=" grid h-full grid-cols-9 grid-rows-6 rounded-md px-2 pt-2 ">
-//      {/* created 6 rows and */}
-//      <section className=" col-start-1 col-end-10 grid grid-cols-9 grid-rows-2">
-//        <div
-//          className=" col-span-1 col-start-4  flex  items-center justify-center rounded-md bg-[#b8dbd9] font-bold text-black transition duration-300 ease-in hover:scale-105 hover:bg-[#3a515c] hover:font-bold hover:text-[#c3cbd2] hover:shadow-lg"
-//          onClick={floorPlanSwitch1}
-//        >
-//          <button>Floor 1</button>
-//        </div>
-//        <div
-//          className=" col-span-1 col-start-6 flex items-center justify-center rounded-md bg-[#b8dbd9] font-bold text-black transition duration-300 ease-in hover:scale-105 hover:bg-[#3a515c] hover:font-bold hover:text-[#c3cbd2] hover:shadow-lg"
-//          onClick={floorPlanSwitch2}
-//        >
-//          <button>Floor 2</button>
-//        </div>
-//      </section>
-//      {show1stFloorPlan && (
-//        <section className="col-start-1 col-end-10 row-start-2 row-end-7 grid h-full grid-cols-9 gap-y-2 [grid-template-rows:40.2px_repeat(5,1fr)] 2xl:gap-y-3">
-//          <div className="col-span-2 col-start-2 grid grid-cols-4 ">
-//            <button className="col-span-2 col-start-2 whitespace-nowrap rounded-md bg-[#2f4550]">
-//              West
-//            </button>
-//          </div>
-//          <div className="col-span-2 col-start-7 grid grid-cols-4">
-//            <button className=" col-span-2 col-start-2 whitespace-nowrap rounded-md bg-[#2f4550]">
-//              East
-//            </button>
-//          </div>
-//          {/* container for floor plans for both wings on first floor */}
-//          <div className="col-span-9 row-span-5 row-start-2 grid grid-cols-9 grid-rows-5 border border-red-600 text-black">
-//            <section className=" col-span-4 col-start-1 row-span-4 grid grid-cols-4 grid-rows-4 gap-2 border text-black">
-//              {westSide.map((room) => renderRoom(room))}
-//            </section>
-//            <section className=" col-span-4 col-start-6 row-span-4 grid grid-cols-4 grid-rows-4 gap-2">
-//              {eastSide.map((room) => renderRoom(room))}
-//            </section>
-//          </div>
-//        </section>
-//      )}
-//      {show2ndFloorPlan && (
-//        <section className=" 2xl:gap-y-3[grid-template-rows:40.2px_repeat(5,1fr)] col-start-1 col-end-10 row-start-2 row-end-7 grid h-full grid-cols-9 gap-y-2">
-//          <div className="col-span-2 col-start-2 grid grid-cols-4 ">
-//            <button className="col-span-2 col-start-2 whitespace-nowrap rounded-md bg-[#2f4550]">
-//              West
-//            </button>
-//          </div>
-//          <div className="col-span-2 col-start-7 grid grid-cols-4">
-//            <button className=" col-span-2 col-start-2 whitespace-nowrap rounded-md bg-[#2f4550]">
-//              East
-//            </button>
-//          </div>
-//          <div className="col-span-9 row-span-5 row-start-2 grid grid-cols-9 grid-rows-5 text-black">
-//            <section className=" col-span-4 col-start-1 row-span-4 grid grid-cols-4 grid-rows-4 gap-2 text-black">
-//              {westSide2.map((room) => renderRoom(room))}
-//            </section>
-//            <section className=" col-span-4 col-start-6 row-span-4 grid grid-cols-4 grid-rows-4 gap-2">
-//              {eastSide2.map((room) => renderRoom(room))}
-//            </section>
-//          </div>
-//        </section>
-//      )}
-//    </section>
-//  );
-
-// new way using flex for the room layout alongside grid
