@@ -1,29 +1,42 @@
 import bcrypt from "bcrypt";
 
 import prisma from "@/lib/prismadb";
+import { signJwtAccessToken, verifyJwt } from "@/lib/jwtCreator";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, name, password } = body;
 
-    if (!email || !name || !password) {
+    // Remove sensitive information before jwtSignIn
+    const { password, ...userWithoutPass } = body;
+
+    if (!userWithoutPass.email || !userWithoutPass.name || !password) {
       return new NextResponse("Missing information", { status: 400 });
     }
     const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Prepare user payload for JWT
+    const userPayload = { ...userWithoutPass };
+    const accessToken = signJwtAccessToken(userPayload);
     console.log("Creating user with:", {
-      email,
-      name,
+      email: userWithoutPass.email,
+      name: userWithoutPass.name,
       hashedPassword,
+      access_token: token,
     });
+    const encrytedToken = await bcrypt.hash(accessToken, 12); //changing the access token and encrypting it
     const user = await prisma.user.create({
       data: {
-        email,
-        name,
+        email: userWithoutPass.email,
+        name: userWithoutPass.name,
         hashedPassword,
+        access_token: encrytedToken,
       },
     });
+
+    console.log({ user });
+
     return NextResponse.json(user);
   } catch (error) {
     console.error("Registration error:", error.message);
@@ -34,3 +47,5 @@ export async function POST(request) {
     );
   }
 }
+
+// there is need to prevent the token from being sent back to the client

@@ -27,10 +27,7 @@ const CHAIR_TYPES = [
   },
 ];
 
-//when i pass props into chairLayou
-export function ChairLayout(props) {
-  const { chairData } = props;
-
+export function ChairLayout({ chairData }) {
   const [currentChairType, setCurrentChairType] = useState(STANDARD);
   return (
     <section className="flex h-full w-full flex-col xl:border-r">
@@ -67,11 +64,11 @@ export function ChairLayout(props) {
               return (
                 <div className="w-1/2  px-3 py-2 font-semibold" key={e["_id"]}>
                   <h1 className="border border-gray-400 py-[20px]">
-                    {e["tagId"]}
+                    {e["TagId"]}
                   </h1>
                 </div>
               );
-            }) || <Progress value={85} />}
+            }) || <Progress value={50} />}
           </div>
           <ScrollBar orientation="vertical" className="bg-[#bac6db]" />
         </ScrollArea>

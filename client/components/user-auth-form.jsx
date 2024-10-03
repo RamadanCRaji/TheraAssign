@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -64,7 +63,7 @@ export function UserAuthForm({ className, ...props }) {
   const [variant, setVariant] = React.useState("LOGIN");
 
   const formOneRegister = useForm({
-    resolver: zodResolver(formOneRegisterSchema),
+    resolver: zodResolver(formOneRegisterSchema), // uses the schema to validate entries before onsubmit is called
     defaultValues: formOneRegisterDefaultValues,
   });
   const formTwoLogin = useForm({
@@ -74,7 +73,7 @@ export function UserAuthForm({ className, ...props }) {
   React.useEffect(() => {
     if (status === "authenticated") {
       router.push("/main/dashboard/overview");
-      console.log(`signed in as ${session.user.name}}`);
+      console.log(`signed in as ${Object.keys(session.user)}`);
     }
   }, [status]);
   const toggleVariant = React.useCallback(() => {
@@ -82,35 +81,62 @@ export function UserAuthForm({ className, ...props }) {
       setVariant("REGISTER");
     } else setVariant("LOGIN");
   }, [variant]);
-
+  const getSocialAuthToken = async () => {
+    try {
+      const response = await fetch("/api/protected/socialAuthToken/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`something went wrong ${error.message}`);
+    }
+  };
   async function onSubmit(data) {
     try {
-      console.log({ data });
       setIsLoading(true);
+
       if (variant === "REGISTER") {
-        //axios call with register route
-        const response = await fetch(`/api/register`, {
+        const response = await fetch("/api/register", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", //representation headers
           },
           body: JSON.stringify({ ...data }),
           credentials: "include",
         });
+
+        console.log("Fetch response received");
+
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok: ${response.statusText}`,
+          );
+        }
+        const responseObject = await response.json();
+        console.log("this is the response object", { responseObject });
+        const { access_token: encrypted_accessToken } = responseObject;
+
         toast({
           variant: "success",
           title: "Success",
-          description: `form submitted successfully`,
+          description: "Form submitted successfully",
         });
-        if (!response.ok) {
-          throw new Error(`Network response was not ok:${response}`);
-        }
         await signIn("credentials", data);
       }
       if (variant === "LOGIN") {
         //NextAuth Login
-        const login = await signIn("credentials", { ...data, redirect: false });
-        console.log({ login });
+        // sign in will only return the status of the login process and not the full user data
+        //
+        let login = await signIn("credentials", {
+          ...data,
+          redirect: false,
+        });
+        console.log("Login result:", login);
         if (login?.ok && !login?.error) {
           toast({
             variant: "success",
@@ -138,7 +164,10 @@ export function UserAuthForm({ className, ...props }) {
     try {
       setIsLoading(true);
       const login = await signIn(action, { redirect: false });
-      console.log(`this is the login message we got ${{ login }}`);
+      // Log the entire login response for debugging
+      const socialToken = await getSocialAuthToken();
+      console.log("Full social token:", socialToken);
+
       if (login?.ok && !login?.error) {
         toast({
           variant: "success",
