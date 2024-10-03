@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authGenerator } from "@/app/actions/authGenerator";
-const API = "https://thera-assign-backend.vercel.app/api/dashBoardInfo";
+const API = "https://thera-assign-backend.vercel.app/api/dashBoardInfo/";
 
 export async function GET(request) {
   try {
