@@ -47,7 +47,6 @@ import {
   changePatientRoom,
 } from "@/src/services/apiService";
 import FloorPanel from "@/components/dashboard/dash-board-panels/FloorPanelCopy";
-import { eastSide } from "@/data/roomData/firstFloor";
 
 // Patient Search  schema for validation
 const FormOneSchema = z.object({
