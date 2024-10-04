@@ -111,18 +111,22 @@ function RoomChange() {
 
   useEffect(() => {
     const getAllPatientAndAvailableChairs = async () => {
-      const [patientData, ALLCHAIRS] = await Promise.all([
-        fetchAllPatients(),
-        fetchAllChairData(),
-      ]);
-      setChairData((prev) => ({
-        ...prev,
-        [STANDARD]: ALLCHAIRS.standard,
-        [BARIATRIC]: ALLCHAIRS.bariatric,
-        [TILTING]: ALLCHAIRS.tiltInSpace,
-      }));
-      set_all_patients_info((prev) => [...patientData]);
-      set_centralPatient_data((prev) => [...patientData]);
+      try {
+        const [patientData, ALLCHAIRS] = await Promise.all([
+          fetchAllPatients(),
+          fetchAllChairData(),
+        ]);
+        setChairData((prev) => ({
+          ...prev,
+          [STANDARD]: ALLCHAIRS.standard,
+          [BARIATRIC]: ALLCHAIRS.bariatric,
+          [TILTING]: ALLCHAIRS.tiltInSpace,
+        }));
+        set_all_patients_info((prev) => [...patientData]);
+        set_centralPatient_data((prev) => [...patientData]);
+      } catch (error) {
+        console.error(error.message);
+      }
     };
     getAllPatientAndAvailableChairs();
   }, []);

@@ -107,7 +107,7 @@ function Admit() {
       });
       // setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch chairs:", error.message);
+      console.error(error.message);
     }
   };
 

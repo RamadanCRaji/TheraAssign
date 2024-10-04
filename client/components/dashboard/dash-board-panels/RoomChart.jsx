@@ -33,28 +33,38 @@ function RoomChartComponent() {
   });
 
   useEffect(() => {
-    const getPatientDetails = async () => {
-      const response = await fetchAllHospitalDetails();
-      const stats = response.rooms;
+    const getAllHospitalDetails = async () => {
+      try {
+        const response = await fetchAllHospitalDetails();
+        const stats = response?.rooms || []; // Safeguard in case rooms is undefined
 
-      setChartData((prevData) => {
-        const availableRooms = stats.filter(
-          (room) => !room["PatientId"],
-        ).length; //occupied is false but !occupied turns to true
-        const UnavailableRooms = stats.filter(
-          (room) => room["PatientId"],
-        ).length; //occupied is false but leave it ensure it does not reutn anything
-        const updatedData = { ...prevData };
-        updatedData.datasets = [...prevData.datasets];
-        updatedData.datasets[0] = {
-          ...updatedData.datasets[0],
-          data: [UnavailableRooms || 0, availableRooms || 0],
-        };
-        return updatedData;
-      });
+        setChartData((prevData) => {
+          const availableRooms =
+            stats?.filter((room) => !room?.PatientId).length || 0; // Ensuring it returns 0 if nothing is found
+
+          const unavailableRooms =
+            stats?.filter((room) => room?.PatientId).length || 0;
+
+          const updatedData = {
+            ...prevData,
+            datasets: [
+              {
+                ...prevData.datasets[0],
+                data: [unavailableRooms, availableRooms],
+              },
+            ],
+          };
+
+          return updatedData;
+        });
+      } catch (error) {
+        console.error("Error fetching  details:", error.message);
+      }
     };
-    getPatientDetails();
+
+    getAllHospitalDetails();
   }, []);
+
   return (
     <div className=" relative  h-full w-full p-4">
       <Pie data={chartData} options={chartOptions} />
@@ -63,9 +73,3 @@ function RoomChartComponent() {
 }
 
 export default RoomChartComponent;
-// useEffect(() => {
-// setRoomOccupancyData((prev) => {
-//   return { ...data };
-// });
-//   getPatientDetails();
-// }, []);

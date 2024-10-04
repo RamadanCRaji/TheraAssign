@@ -19,7 +19,7 @@ export async function GET(request) {
       throw new Error(response.errorMsg);
     }
 
-    const data = await response.json(); // parsing json to an object
+    const data = await response.json();
 
     // Return a successful response
     return new NextResponse(JSON.stringify(data), {

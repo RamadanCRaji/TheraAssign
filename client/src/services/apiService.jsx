@@ -12,8 +12,7 @@ export async function fetchAllHospitalDetails() {
 
     return data;
   } catch (error) {
-    console.error("There was a problem with fetch operation:", error.message);
-    // throw error; rethrow the error for caller to handle
+    throw error;
   }
 }
 
@@ -37,11 +36,7 @@ export const fetchAllChairData = async () => {
 
     return data;
   } catch (error) {
-    console.error(
-      "There was a problem with fetch all Chair operation:",
-      error.message,
-    );
-    // throw error; rethrow the error for caller to handle
+    throw error;
   }
 };
 
@@ -59,11 +54,7 @@ export const fetchAvailableRooms = async () => {
 
     return data;
   } catch (error) {
-    console.error(
-      "There was a problem with fetch all free room operation:",
-      error.message,
-    );
-    // throw error; rethrow the error for caller to handle
+    throw error;
   }
 };
 
@@ -100,11 +91,7 @@ export const fetchAllRoomData = async () => {
 
     return data;
   } catch (error) {
-    console.error(
-      "There was a problem with fetch all room operation:",
-      error.message,
-    );
-    // throw error; rethrow the error for caller to handle
+    throw error;
   }
 };
 export const fetchAllPatients = async () => {

@@ -12,7 +12,6 @@ export async function GET(request) {
         Authorization: `Bearer ${AuthPass}`,
       },
       method: "GET",
-      credentials: "include",
     });
 
     if (!response.ok) {

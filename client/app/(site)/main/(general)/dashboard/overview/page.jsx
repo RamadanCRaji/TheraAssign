@@ -45,7 +45,7 @@ function Overview() {
               <span className="inline-blocdk text-black">
                 {id === "RoomChart"
                   ? info?.rooms.filter((room) => room["PatientId"]).length
-                  : info?.chairs.filter((chair) => !chair.Status.Available)
+                  : info?.chairs.filter((chair) => !chair?.Status?.Available)
                       .length}
               </span>
             </div>
@@ -57,7 +57,7 @@ function Overview() {
               <span className="inline-block text-black">
                 {id === "RoomChart"
                   ? info?.rooms.filter((room) => !room["PatientId"]).length
-                  : info?.chairs.filter((chair) => chair.Status.Available)
+                  : info?.chairs.filter((chair) => chair?.Status?.Available)
                       .length}
               </span>
             </div>
@@ -68,13 +68,13 @@ function Overview() {
   };
 
   useEffect(() => {
-    const getPatientDetails = async () => {
+    const getAllHospitalDetails = async () => {
       const data = await fetchAllHospitalDetails();
 
       setInfo({ ...data });
       // setLoading(false);
     };
-    getPatientDetails();
+    getAllHospitalDetails();
   }, []);
 
   // if (loading) {

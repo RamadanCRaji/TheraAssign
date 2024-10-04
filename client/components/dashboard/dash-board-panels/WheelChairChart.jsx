@@ -34,29 +34,33 @@ function WheelChairChartComponent() {
   // useEffect hook to update chart data when 'stats' change.
   useEffect(() => {
     // Function to update chart data with new stats.
-    const getPatientDetails = async () => {
-      const response = await fetchAllHospitalDetails();
-      const stats = response.chairs;
-      setChartData((prevData) => {
-        const availableChairs = stats.filter(
-          (chair) => chair.Status.Available,
-        ).length;
+    const getAllHospitalDetails = async () => {
+      try {
+        const response = await fetchAllHospitalDetails();
+        const stats = response?.chairs || [];
+        setChartData((prevData) => {
+          const availableChairs = stats?.filter(
+            (chair) => chair?.Status?.Available,
+          ).length;
 
-        const UnavailableChairs = stats.filter(
-          (chair) => !chair.Status.Available,
-        ).length;
-        const updatedData = { ...prevData }; // Copy previous chart data.
-
-        updatedData.datasets = [...prevData.datasets];
-
-        updatedData.datasets[0] = {
-          ...updatedData.datasets[0],
-          data: [UnavailableChairs || 0, availableChairs || 0],
-        };
-        return updatedData;
-      });
+          const UnavailableChairs =
+            stats?.filter((chair) => !chair?.Status?.Available).length || 0;
+          const updatedData = {
+            ...prevData,
+            datasets: [
+              {
+                ...prevData.datasets[0],
+                data: [UnavailableChairs || 0, availableChairs || 0],
+              },
+            ],
+          };
+          return updatedData;
+        });
+      } catch (error) {
+        console.error("Error fetching details:", error.message);
+      }
     };
-    getPatientDetails();
+    getAllHospitalDetails();
   }, []);
 
   return (

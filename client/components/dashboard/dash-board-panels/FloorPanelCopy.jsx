@@ -34,7 +34,7 @@ function FloorPanel({ layoutPlan }) {
       const data = await fetchAllRoomData();
       setFloorData((prev) => [...data]);
     } catch (error) {
-      console.log("Error fetching room data:", error.message);
+      console.error("Error fetching room data:", error.message);
     }
   };
 

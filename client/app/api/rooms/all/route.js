@@ -6,12 +6,12 @@ export async function GET(request) {
   try {
     // Get the current user (this function also checks to see if we have a current session)
     const { token: AuthPass } = await authGenerator();
+
     const response = await fetch(`${API}`, {
       headers: {
         Authorization: `Bearer ${AuthPass}`,
       },
       method: "GET",
-      credentials: "include",
     });
 
     if (!response.ok) {
