@@ -15,7 +15,8 @@ export async function GET(request) {
     });
 
     if (!response.ok) {
-      throw new Error(response.error);
+      const errorMsg = await response.json();
+      throw new Error(errorMsg);
     }
 
     const data = await response.json(); // parsing json to an object

@@ -19,7 +19,7 @@ export async function POST(request) {
 
     if (!response.ok) {
       const errorMsg = await response.text();
-      throw new Error(response.errorMsg);
+      throw new Error(errorMsg);
     }
 
     const data = await response.text();
