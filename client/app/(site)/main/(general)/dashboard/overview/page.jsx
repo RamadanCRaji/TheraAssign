@@ -68,13 +68,17 @@ function Overview() {
   };
 
   useEffect(() => {
-    const getAllHospitalDetails = async () => {
-      const data = await fetchAllHospitalDetails();
+    try {
+      const getAllHospitalDetails = async () => {
+        const data = await fetchAllHospitalDetails();
 
-      setInfo({ ...data });
-      // setLoading(false);
-    };
-    getAllHospitalDetails();
+        setInfo({ ...data });
+        // setLoading(false);
+      };
+      getAllHospitalDetails();
+    } catch (error) {
+      console.error(error.message());
+    }
   }, []);
 
   // if (loading) {

@@ -1,5 +1,4 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { NextResponse } from "next/server";
 import { signJwtAccessToken } from "@/lib/jwtCreator";
 
 /**
