@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { authGenerator } from "@/app/actions/authGenerator";
-const API = "https://thera-assign-backend.vercel.app/api/changePatientRoom";
+const API =
+  "https://thera-assign-backend.vercel.app/api/rooms/changePatientRoom";
 
 export async function PUT(request) {
   try {
